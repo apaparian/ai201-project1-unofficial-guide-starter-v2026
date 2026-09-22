@@ -26,6 +26,8 @@ contains the answer.
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
 
+I chose 4 out of 5 because retrieval systems are not perfect, and some questions may involve information that appears in only a small number of documents. Requiring 5 out of 5 would leave little room for difficult edge cases.
+
 ---
 
 ## 2. Every answer names a source
@@ -35,6 +37,8 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
+
+I chose every answer because source attribution is essential for a grounded retrieval system. If an answer lacks a source, there is no easy way to verify where the information came from.
 
 ---
 
@@ -53,9 +57,13 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
+I chose 4 out of 5 because similarity scores can sometimes overlap between relevant and irrelevant questions. The target allows for occasional borderline cases while still requiring the gate to reject most unsupported questions.
+
 ---
 
 ## 4. Something about your chunks
+
+No chunk is under 40 characters or over 600
 
 <!-- YOU WRITE THIS ONE.
 
@@ -69,15 +77,15 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-
-
 **Why this target:**
 
-
+I chose these limits because very short chunks often contain incomplete information, while very large chunks can include multiple topics and reduce retrieval precision. The range is intended to keep chunks large enough to provide context but small enough to stay focused on a single idea.
 
 ---
 
 ## 5. Your choice
+
+Every answer comes back in under 30 seconds
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -87,11 +95,9 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
-
-
 **Why this target:**
 
-
+I chose 30 seconds because this system is intended to be interactive. A longer wait would make it difficult to use as a question-answering tool, while a stricter target such as 5 seconds might be unrealistic when embedding, retrieval, and model generation are all involved.
 
 ---
 
