@@ -107,8 +107,10 @@ cards only.
      visible. Milestone 4. -->
 
 **Question:**
+"How long does the train from Brightwater take to reach the regional hub?"
 
 **Answer:**
+The train from Brightwater takes 50 minutes to reach the regional hub. 
 
 ```
 ```
@@ -126,6 +128,17 @@ cards only.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
+Gate: best distance 0.236 is under the 0.6 cutoff
+Gate: best distance 0.274 is under the 0.6 cutoff
+Gate: best distance 0.298 is under the 0.6 cutoff
+Gate: best distance 0.311 is under the 0.6 cutoff
+Gate: best distance 0.379 is under the 0.6 cutoff
+
+Gate: best distance 0.767 is over the 0.6 cutoff — refusing
+Gate: best distance 0.880 is over the 0.6 cutoff — refusing
+Gate: best distance 0.908 is over the 0.6 cutoff — refusing
+Gate: best distance 0.841 is over the 0.6 cutoff — refusing
+Gate: best distance 0.859 is over the 0.6 cutoff — refusing
 |  |  |  |
 
 ## How I Used AI
