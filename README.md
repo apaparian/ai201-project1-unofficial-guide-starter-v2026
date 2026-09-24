@@ -27,10 +27,13 @@
 
      Milestone 5. -->
 
-## Chunking Strategy
+     This repo implements a retreival augmented generation system (RAG) for the city_guides corpus. Userscan ask the LLM questions regarding the locations mentioned throughout its various guides.
+     
+     The chunker splits the couments into chunks based on sections, rather than length. A relevance gate refuses answers to questions not contained in the corpus.
+     
+     An answer is generated using only the information contained within the corpus.
 
-**Chunk size:**
-**Overlap:**
+## Chunking Strategy
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
@@ -42,6 +45,7 @@
 
      Milestone 3. -->
      
+     I didn't use a traditional size and overlap for the chunker. Rather, I split the chunks by section headers. This corpus was consistently labeled by section headers using a shared punctuation marker. Chunks split by section insured a full and singular thought aligned with each chunk.
 
 ## Sample Chunks
 
@@ -112,10 +116,8 @@ cards only.
 **Answer:**
 The train from Brightwater takes 50 minutes to reach the regional hub. 
 
-```
-```
-
 **My relevance cutoff:**
+0.6-- the default. My sample data provided a wide range of .38 to .75 between accepted and refused answers.
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -128,17 +130,17 @@ The train from Brightwater takes 50 minutes to reach the regional hub.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-Gate: best distance 0.236 is under the 0.6 cutoff
-Gate: best distance 0.274 is under the 0.6 cutoff
-Gate: best distance 0.298 is under the 0.6 cutoff
-Gate: best distance 0.311 is under the 0.6 cutoff
-Gate: best distance 0.379 is under the 0.6 cutoff
+| How long does the train from Brightwater take to reach the regional hub? | Yes | 0.236 |
+| What seasons are recommended for visiting Kestrelford? | Yes | 0.274 |
+| Which street in Brightwater is known for cheaper food options? | Yes | 0.298 |
+| When is the best time to visit Corry Vale? | Yes | 0.311 |
+| What day is the tearoom in Givens Mill closed? | Yes | 0.379 |
 
-Gate: best distance 0.767 is over the 0.6 cutoff — refusing
-Gate: best distance 0.880 is over the 0.6 cutoff — refusing
-Gate: best distance 0.908 is over the 0.6 cutoff — refusing
-Gate: best distance 0.841 is over the 0.6 cutoff — refusing
-Gate: best distance 0.859 is over the 0.6 cutoff — refusing
+| What is the capital of Mongolia? | No | 0.767 |
+| How do I change the oil in a diesel engine? | No | 0.880 |
+| Who won the 1994 World Cup? | No | 0.908 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.841 |
+| How do I write a for loop in Rust? | No | 0.859 |
 |  |  |  |
 
 ## How I Used AI
@@ -153,8 +155,10 @@ Gate: best distance 0.859 is over the 0.6 cutoff — refusing
      Milestone 5. -->
 
 **1.**
+I asked Copilot for help in implemented the chunking function. I prescribed the strategy, after noticing that the corpus was neatly organized by sections that followed a consistent punctuation style. AI returned the ordering of ".strip" and ".split" following the default function as a template.
 
 **2.**
+I asked Copilot to aid in determining the relevance cutoff. My in scope and out of scope questions were neatly grouped below .38 or above .76, respectively. Copilot suggested I remain with the default provided value of 0.6, since any value within the range would be considered appropriate.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
