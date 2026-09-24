@@ -153,7 +153,7 @@ I asked Copilot to aid in determining the relevance cutoff. My in scope and out 
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
      ───────────────────────────────────────────────────────────────────────── -->
-
+Metadata filtering — let people narrow results by source or date. (only by source)
 ---
 
 # Unit 2
