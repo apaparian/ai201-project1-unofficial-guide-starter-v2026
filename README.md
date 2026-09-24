@@ -2,19 +2,8 @@
 
 <!-- Replace this line with your name and which corpus you picked. -->
 
-> **This file is your submission.** Fill it in as you go — most sections get
-> written during the milestone that produces them, not at the end.
->
-> How the starter works, and every command you'll need, is in `RUNNING.md`.
-> Leave that file alone.
->
-> **Paste everything as text.** No screenshots, no video. A typed table gets
-> full credit; a picture of the same table gets none.
->
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-> are notes to you and don't show up when the page renders — you can leave them
-> or remove them.
-
+Aram Paparian
+Corpus: city_guides
 ---
 
 # Unit 1
@@ -27,9 +16,9 @@
 
      Milestone 5. -->
 
-     This repo implements a retreival augmented generation system (RAG) for the city_guides corpus. Userscan ask the LLM questions regarding the locations mentioned throughout its various guides.
+     This repo implements a retrieval augmented generation system (RAG) for the city_guides corpus. Users can ask the LLM questions regarding the locations mentioned throughout its various guides.
      
-     The chunker splits the couments into chunks based on sections, rather than length. A relevance gate refuses answers to questions not contained in the corpus.
+     The chunker splits the documents into chunks based on sections, rather than length. A relevance gate refuses answers to questions not contained in the corpus.
      
      An answer is generated using only the information contained within the corpus.
 
@@ -114,10 +103,11 @@ cards only.
 "How long does the train from Brightwater take to reach the regional hub?"
 
 **Answer:**
-The train from Brightwater takes 50 minutes to reach the regional hub. 
+The train from Brightwater takes 50 minutes to reach the regional hub.
+Sources retrieved: guide_brightwater.md, guide_marchwood.md, guide_regional_transport.md, guide_thornby_wells.md
 
 **My relevance cutoff:**
-0.6-- the default. My sample data provided a wide range of .38 to .75 between accepted and refused answers.
+0.6. My sample data provided a wide range of .379 to .767 between accepted and refused answers. This allowed for quite a bit flexibity in determining the cutoff value. I stayed with the default.
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -141,7 +131,6 @@ The train from Brightwater takes 50 minutes to reach the regional hub.
 | Who won the 1994 World Cup? | No | 0.908 |
 | What is the recommended dosage of ibuprofen for a headache? | No | 0.841 |
 | How do I write a for loop in Rust? | No | 0.859 |
-|  |  |  |
 
 ## How I Used AI
 
