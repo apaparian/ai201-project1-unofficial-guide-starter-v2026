@@ -208,8 +208,13 @@ def ask_pipeline(
     import gate
     from generate import answer_from_chunks, build_prompt
 
+    search_query = question
+    if history:
+        turns = " ".join(f"{q} {a}" for q, a in history)
+        search_query = f"{turns} {question}"
+
     results = search(
-        question,
+        search_query,
         top_k=top_k or config.TOP_K,
         corpus=corpus or config.CORPUS,
         variant=variant,

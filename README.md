@@ -149,14 +149,15 @@ I asked Copilot for help in implemented the chunking function. I prescribed the 
 **2.**
 I asked Copilot to aid in determining the relevance cutoff. My in scope and out of scope questions were neatly grouped below .38 or above .76, respectively. Copilot suggested I remain with the default provided value of 0.6, since any value within the range would be considered appropriate.
 
-In addition, the conversational memory stretch feature was implemented near its entirety by Claude Code. 
+**
+In addition, the conversational memory stretch feature was implemented near its entirety by Claude Code.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
      ───────────────────────────────────────────────────────────────────────── -->
 Metadata filtering — let people narrow results by source or date. (only by source)
-Conversational memory — let the next question build on the last one.
+Conversational memory — let the next question build on the last one. (ask questions until you quit)
 ---
 
 # Unit 2
