@@ -9,6 +9,8 @@ The Unofficial Guide — command line.
     python app.py retrieve "question"    show distances, no answer (Milestone 4)
     python app.py corpora                list the available corpora
 
+ask and retrieve take --source DOCUMENT.md to restrict access to a specific document.
+
 Every command takes --corpus NAME to work with a different corpus without
 editing config.py.
 """
