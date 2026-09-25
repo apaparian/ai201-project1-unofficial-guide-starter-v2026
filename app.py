@@ -187,6 +187,7 @@ def ask_pipeline(
     on_gate=None,
     on_prompt=None,
     source=None,
+    history=None,
 ):
     """Retrieve, gate, answer. Returns the outcome and prints nothing.
 
@@ -231,12 +232,12 @@ def ask_pipeline(
         outcome["answer"] = gate.REFUSAL
         return outcome
 
-    prompt = build_prompt(question, results)
+    prompt = build_prompt(question, results, history=history)
     if on_prompt is not None:
         on_prompt(prompt)
 
     outcome["prompt"] = prompt
-    outcome["answer"] = answer_from_chunks(question, results)
+    outcome["answer"] = answer_from_chunks(question, results, history=history)
     outcome["sources"] = sorted({r.source for r in results})
     return outcome
 
@@ -250,6 +251,7 @@ def _ask_one(
     show_distances=True,
     show_prompt=False,
     source=None,
+    history=None,
 ):
     import gate
     from generate import GROUNDING_INSTRUCTION
@@ -278,6 +280,7 @@ def _ask_one(
         on_gate=print_distances if show_distances else None,
         on_prompt=print_prompt if show_prompt else None,
         source=source,
+        history=history,
     )
 
     if outcome["refused"]:
@@ -306,6 +309,7 @@ def cmd_ask(args):
             )
         else:
             print("Ask a question, or press Enter on an empty line to quit.\n")
+            history = []
             while True:
                 try:
                     question = input("> ").strip()
@@ -314,7 +318,7 @@ def cmd_ask(args):
                     break
                 if not question:
                     break
-                _ask_one(
+                answer = _ask_one(
                     question,
                     corpus,
                     args.variant,
@@ -322,7 +326,9 @@ def cmd_ask(args):
                     args.threshold,
                     show_prompt=args.show_prompt,
                     source=args.source,
+                    history=history,
                 )
+                history.append((question, answer))
     finally:
         print(gen.usage())
 
