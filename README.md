@@ -180,15 +180,70 @@ Conversational memory — let the next question build on the last one. (ask ques
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. No chunk is under 40 characters or over 600 | 5 of 5 | 4/5 | 4/5 | 4/5 | MISS |
+| 5. Every answer comes back in under 30 seconds | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+1. Retrieved chunk contains the answer
+Produced by: run_eval.py::main and store.py::search and scorer.py::judge
+
+Output:
+| How long does the train from Brightwater take to reach the regional hub? | pass | pass | pass |
+- The train from Brightwater takes 50 minutes to reach the regional hub
+| What seasons are recommended for visiting Kestrelford? | pass | pass | pass |
+- Late spring and early autumn are recommended for visiting Kestrelford
+| Which street in Brightwater is known for cheaper food options? | pass | pass | pass |
+- Corry Lane is the street known for cheaper food options in Brightwater, where the food costs about a third less than on the riverside strip
+| When is the best time to visit Corry Vale? | pass | pass | pass |
+- The best time to visit Corry Vale is from May to September. Outside of these months, amenities close earlier, footpaths become very boggy, and the road above the second village is impassable in snow
+| What day is the tearoom in Givens Mill closed? | pass | pass | pass |
+- The tearoom is closed on Tuesdays
+
+
+2. Every answer names a source
+Produced by: run_eval.py::main and generate.py::answer_from_chunks
+
+Output:
+`guide_brightwater.md` (and also mentioned in `guide_regional_transport.md`).
+`guide_kestrelford.md`
+*guide_brightwater.md* and *guide_eating.md*
+*guide_corry_vale.md*
+guide_givens_mill.md
+
+3. Gate stops out-of-corpus questions
+Produced by: run_eval.py::check_out_of_scope and gate.py::check
+
+Output:
+| What is the capital of Mongolia? | 0.767 | refused |
+| How do I change the oil in a diesel engine? | 0.880 | refused |
+| Who won the 1994 World Cup? | 0.906 | refused |
+| What is the recommended dosage of ibuprofen for a headache? | 0.841 | refused |
+| How do I write a for loop in Rust? | 0.859 | refused |
+
+4. No chunk is under 40 characters or over 600
+Produced by: run_eval.py::chunk_stats and chunker.py::split_documents
+
+- Chunk length: 296-507 chars (1831 total)
+- Chunk length: 210-464 chars (1617 total)
+- Chunk length: 272-659 chars (1950 total)
+- Chunk length: 225-300 chars (1359 total)
+- Chunk length: 186-275 chars (1185 total)
+
+5. Every answer comes back in under 30 seconds
+Produced by: run_eval.py::timed_call
+
+Output:
+- Answer time: 1.39s
+- Answer time: 0.53s
+- Answer time: 0.63s
+- Answer time: 0.64s
+- Answer time: 0.50s
+``
 
 ## Verdicts
 

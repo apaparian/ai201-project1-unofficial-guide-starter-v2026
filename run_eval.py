@@ -35,6 +35,7 @@ you a scorer; you'd learn nothing from it.
 import argparse
 import datetime as dt
 import sys
+import time
 from pathlib import Path
 
 import config
@@ -51,21 +52,47 @@ def load_scorer():
     return judge if callable(judge) else None
 
 
+def chunk_stats(results):
+    """Min/max chunk length and total characters across the retrieved chunks.
+
+    Length here means characters, since that's what the chunker itself splits
+    on. Returns a dict of zeros if nothing was retrieved (e.g. the gate
+    refused before any chunks came back).
+    """
+    lengths = [len(r.text) for r in results]
+    if not lengths:
+        return {"min_len": 0, "max_len": 0, "total_chars": 0}
+    return {
+        "min_len": min(lengths),
+        "max_len": max(lengths),
+        "total_chars": sum(lengths),
+    }
+
+
+def timed_call(fn, *args, **kwargs):
+    """Run fn and report how long it took, in seconds, alongside its result."""
+    start = time.perf_counter()
+    result = fn(*args, **kwargs)
+    elapsed = time.perf_counter() - start
+    return result, elapsed
+
+
 def run_once(question: str, top_k, threshold, corpus, variant):
-    """One question, one run. Returns the answer and what retrieval gave us."""
+    """One question, one run. Returns the answer, retrieval, timing, and chunk stats."""
     from store import search
     import gate
     from generate import answer_from_chunks
 
     results = search(question, top_k=top_k, corpus=corpus, variant=variant)
     decision = gate.check(results, threshold=threshold)
+    stats = chunk_stats(results)
 
     if not decision.passed:
-        return gate.REFUSAL, results, decision
+        return gate.REFUSAL, results, decision, 0.0, stats
 
     # cache=False on purpose. Three runs have to be three real answers.
-    answer = answer_from_chunks(question, results, cache=False)
-    return answer, results, decision
+    answer, elapsed = timed_call(answer_from_chunks, question, results, cache=False)
+    return answer, results, decision, elapsed, stats
 
 
 def main():
@@ -109,14 +136,18 @@ def main():
 
         run_results = []
         for run in range(1, args.runs + 1):
-            answer, results, decision = run_once(
+            answer, results, decision, elapsed, stats = run_once(
                 question, top_k, threshold, corpus, args.variant
             )
             passed = judge(question, expects, answer, results) if judge else None
             run_results.append(passed)
 
             mark = {True: "pass", False: "fail", None: "—"}[passed]
-            print(f"  run {run}: {mark}  (best distance {decision.best_distance:.3f})")
+            print(
+                f"  run {run}: {mark}  (best distance {decision.best_distance:.3f}) "
+                f" {stats['min_len']} to {stats['max_len']} char"
+                f". ({elapsed:.2f}s)"
+            )
 
             transcript.append(
                 {
@@ -126,6 +157,8 @@ def main():
                     "sources": sorted({r.source for r in results}),
                     "best_distance": decision.best_distance,
                     "gate_passed": decision.passed,
+                    "elapsed": elapsed,
+                    **stats,
                 }
             )
 
@@ -254,6 +287,9 @@ def write_report(rows, transcript, gate_rows, args, corpus, top_k, threshold, sc
             f"- Best distance: {entry['best_distance']:.4f} "
             f"({'passed' if entry['gate_passed'] else 'refused by'} the gate)",
             f"- Sources retrieved: {', '.join(entry['sources']) or 'none'}",
+            f"- Chunk length: {entry['min_len']}-{entry['max_len']} chars "
+            f"({entry['total_chars']} total)",
+            f"- Answer time: {entry['elapsed']:.2f}s",
             "",
             "```",
             entry["answer"],
