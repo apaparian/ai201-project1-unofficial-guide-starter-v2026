@@ -265,7 +265,7 @@ Output:
 | 1 | Retrieved chunk contains the answer  | MET | All five questions passed in each run. The scorer checks the answer first, then defaults to checking the chunks retrieved |
 | 2 | Every answer names a source | MET | Every response generates both the source the answer is drawn from at the end as reference, and a "sources retrieved" line |
 | 3 | Gate stops out-of-corpus questions | MET | The relevance gate stops each out-of-corpus question, marked with 'refused' by the evaluator if it did not pass |
-| 4 | No chunk is under 40 characters or over 600 | MISSED | One retreived result surpassed 600. The metric called for a perfect score, not a majority. |
+| 4 | No chunk is under 40 characters or over 600 | MISSED | One retrieved result surpassed 600. The metric called for a perfect score, not a majority. |
 | 5 | Every answer comes back in under 30 seconds | MET | The evaluator runs a timer that recorded the response time under 6 seconds for each run |
 
 ## Diagnoses
@@ -288,15 +288,15 @@ Output:
 
      Milestone 3. -->
 
-     One retrieved chunk exceeded the 600 character target. Chunking is the stage that fails. The strategy never accounted for length, but the metric did, meaning the two were always out of sync. Section dividers could be missed if there is a typo or style change. The current check is rather rudimentary. Some sections, as shown by retieval, exceeded the range to begin with. The metric could be updated to account for what we know the corpus provides (lower bound 20, upper bound 800), but a length check in chunker would be more robust.
+     One retrieved chunk exceeded the 600 character target. Chunking is the stage that fails. The strategy never accounted for length, but the metric did, meaning the two were always out of sync. Section dividers could be missed if there is a typo or style change. The current check is rather rudimentary. Some sections, as shown by retrieval, exceeded the range to begin with. The metric could be updated to account for what we know the corpus provides (lower bound 20, upper bound 800), but a length check in chunker would be more robust.
 
 ## The Improvement
 
 **What I changed:**
-I improved the chunking strategy to further split by paragraph. Chunks overlap by 1 paragraph where possible in order to avoid degrading the quality of responses by losing breadth of context, and inadvertantly fail citerion 1 as a side effect.
+I improved the chunking strategy to further split by paragraph. Chunks overlap by 1 paragraph where possible in order to avoid losing context, potentally reducing the quality of retrieval, and inadvertantly failing citerion 1 as a side effect.
 
 **Why I picked it:**
-I chose this improvement because the metric related to chunking was the only one to fail. Previous evaluation had already flagged the chunking strategy for its potential to fall short
+I chose this improvement because the metric related to chunking was the only one to fail. Previous evaluation had already flagged the chunking strategy for its potential to fall short. The chunk length was being used to measure the evaluation criteria but a check on length was never incorporated into the chunking strategy.
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
@@ -332,7 +332,7 @@ Produced by: run_eval.py::chunk_stats and chunker.py::split_documents
      tell.
 
      Milestone 4. -->
-     Yes, the metric is now fulfilled. The longest chunk retreived during evaluation was 659 characters. The index command had provided output of chunks exceeding 750 characters as well. Chunks now stay under the 600 character metric both during evaluation and the initial output provided when the corpus is indexed. Criterion 4 is now met, without impacting the success rate of the other criteria.
+     Yes, the metric is now fulfilled. The longest chunk retrieved during evaluation was 659 characters. The index command had provided output of chunks exceeding 750 characters as well. Chunks now stay under the 600 character metric both during evaluation and the initial output provided when the corpus is indexed. Criterion 4 is now met, without impacting the success rate of the other criteria.
 
 ## What's Still Broken
 
@@ -353,10 +353,12 @@ Produced by: run_eval.py::chunk_stats and chunker.py::split_documents
      Milestone 5. -->
      The timer based test was a nice addition because it required additional code to be written to support testing, but it was too easy. It's unlikely the tools we're using would exceed 30 seconds, and I'm not sure the code we're writing can have an impact one way or the other if the limit was set lower.
 
-     The chunker could still use work to meet its lower bound, but maybe there doesn't need to be a minimum at all.
+     The chunker could still use work to meet its lower bound, but maybe there doesn't need to be a minimum at all. This would test sections against a minimum length rule, and merge accordingly. The interesting part would be how to evaluate whether the merge should occur forwards or backwards. I'd also want to do more exploration on whether a chunk that is increasingly reliant and tailored towards a specific corpus is a good strategy, or if it would be better to build a more "agnostic" design.
      
-     I wonder if the section based splitting made criteria 1 too easy. A singular idea may be guaranteed when the corpus is neatly organized under a sub header.
+     I wonder if the section based splitting made criteria 1 too easy. A singular idea may be guaranteed when the corpus is neatly organized under a sub header. I think there is an interesting trade-off between the two metrics that I'm not sure how to voice. When reworking the chunker to meet criterion 4, I wanted to introduce overlap in order to avoid losing breadth of information in each chunk.
 
 ## How I Used AI
 
-     I relied on AI to quickly develop run_eval.py to be able to create output that measures criteria 4 and 5. This was additional print out for the range of lengths returned by each retrieval and a timer that recorded how long each response took
+     I relied on AI to quickly develop run_eval.py to be able to create output that measures criteria 4 and 5. This was additional print out for the range of lengths returned by each retrieval by checking the minimum and maximum lenghts, and a timer that recorded how long each response took by creating a timed call.
+
+     I attempted to use AI to redevelop the chunker but the amount of change proposed consistently felt like they were beyond the scope of the assignment. Ultimately it was quite helpful in proposing a library of potential fixes to cherry pick from, possibly inefficient for creating the fix but an engaging educational exercise in seeing the possibilities.
