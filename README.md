@@ -183,7 +183,7 @@ Conversational memory — let the next question build on the last one. (ask ques
 | 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
-| 4. No chunk is under 40 characters or over 600 | 5 of 5 | 4/5 | 4/5 | 4/5 | MISS |
+| 4. No chunk is under 40 characters or over 600 | 5 of 5 | 4/5 | 4/5 | 4/5 | MISSED |
 | 5. Every answer comes back in under 30 seconds | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
@@ -258,11 +258,11 @@ Output:
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunk contains the answer  | MET | All five questions passed in each run. The scorer checks the answer first, then defaults to checking the chunks retrieved |
+| 2 | Every answer names a source | MET | Every response generates both the source the answer is drawn from at the end as reference, and a "sources retrieved" line |
+| 3 | Gate stops out-of-corpus questions | MET | The relevance gate stops each out-of-corpus question, marked with 'refused' by the evaluator if it did not pass |
+| 4 | No chunk is under 40 characters or over 600 | MISSED | One retreived result surpassed 600. The metric called for a perfect score, not a majority. |
+| 5 | Every answer comes back in under 30 seconds | MET | The evaluator runs a timer that recorded the response time under 6 seconds for each run |
 
 ## Diagnoses
 
