@@ -195,12 +195,16 @@ Produced by: run_eval.py::main and store.py::search and scorer.py::judge
 Output:
 | How long does the train from Brightwater take to reach the regional hub? | pass | pass | pass |
 - The train from Brightwater takes 50 minutes to reach the regional hub
+
 | What seasons are recommended for visiting Kestrelford? | pass | pass | pass |
 - Late spring and early autumn are recommended for visiting Kestrelford
+
 | Which street in Brightwater is known for cheaper food options? | pass | pass | pass |
 - Corry Lane is the street known for cheaper food options in Brightwater, where the food costs about a third less than on the riverside strip
+
 | When is the best time to visit Corry Vale? | pass | pass | pass |
 - The best time to visit Corry Vale is from May to September. Outside of these months, amenities close earlier, footpaths become very boggy, and the road above the second village is impassable in snow
+
 | What day is the tearoom in Givens Mill closed? | pass | pass | pass |
 - The tearoom is closed on Tuesdays
 
@@ -283,6 +287,8 @@ Output:
      low, and which one you'd tighten and to what.
 
      Milestone 3. -->
+
+     One retrieved chunk exceeded the 600 character target. Chunking is the stage that fails. The strategy never accounted for length, but the metric did, meaning the two were always out of sync. Section dividers could be missed if there is a typo or style change. The current check is rather rudimentary. Some sections, as shown by retieval, exceeded the range to begin with. The metric could be updated to account for what we know the corpus provides (lower bound 20, upper bound 800), but a length check in chunker would be more robust.
 
 ## The Improvement
 

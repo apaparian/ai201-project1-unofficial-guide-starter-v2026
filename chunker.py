@@ -23,6 +23,7 @@ your pipeline, not giving up.
 """
 
 from dataclasses import dataclass
+import re
 
 import config
 from ingest import Document
@@ -99,23 +100,63 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
     """
     chunks: list[Chunk] = []
     for doc in documents:
-        header = doc.text.split('\n')[0].strip('#').strip()
-        for i, section in enumerate(doc.text.split('##')):
-            if section.strip():
-                if i == 0:
-                    section = section.strip('#').strip()
-                else:
-                    section = header + "\n" + section.strip()
+        # Assumes the corpus does not contain fenced code blocks with lines that begin with "##"
+        # Splits the document into sections based on level-2 headers (##)
+        header = doc.text.split('\n', 1)[0].lstrip('#').strip()
+        sections = [
+            section
+            for section in re.split(r"(?m)(?=^##(?!#)[ \t]+[^\n]{1,80}$)", doc.text)
+            if section.strip()
+        ]
+        index = 0
+        for i, section in enumerate(sections):
+            if i == 0:
+                section = section.lstrip('#').strip()
+            else:
+                section = header + "\n" + section.strip()
+            for text_chunk in _split_paragraphs(section):
                 chunks.append(
                     Chunk(
-                        text=section,
+                        text=text_chunk,
                         source=doc.source,
-                        index=i,
+                        index=index,
                         produced_by="chunker.py::split_documents",
                     )
                 )
+                index += 1
     return chunks
     # return fallback_split(documents)
+
+
+def _split_paragraphs(section: str, limit: int = 600) -> list[str]:
+    """Group whole paragraphs into chunks, carrying one paragraph forward."""
+    paragraphs: list[str] = []
+    for paragraph in section.split("\n\n"):
+        if len(paragraph) <= limit:
+            paragraphs.append(paragraph)
+        else:
+            paragraphs.extend(paragraph[i:i + limit] for i in range(0, len(paragraph), limit))
+
+    staged: list[str] = []
+    chunks: list[str] = []
+
+    for paragraph in paragraphs:
+        candidate = "\n\n".join(staged + [paragraph])
+        if not staged or len(candidate) <= limit:
+            staged.append(paragraph)
+            continue
+
+        chunks.append("\n\n".join(staged).strip())
+        overlap = staged[-1]
+        if len(f"{overlap}\n\n{paragraph}") <= limit:
+            staged = [overlap, paragraph]
+        else:
+            staged = [paragraph]
+
+    if staged:
+        chunks.append("\n\n".join(staged).strip())
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
