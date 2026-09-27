@@ -293,8 +293,10 @@ Output:
 ## The Improvement
 
 **What I changed:**
+I improved the chunking strategy to further split by paragraph. Chunks overlap by 1 paragraph where possible in order to avoid degrading the quality of responses by losing breadth of context, and inadvertantly fail citerion 1 as a side effect.
 
 **Why I picked it:**
+I chose this improvement because the metric related to chunking was the only one to fail. Previous evaluation had already flagged the chunking strategy for its potential to fall short
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
@@ -306,11 +308,21 @@ Output:
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. No chunk is under 40 characters or over 600 | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Every answer comes back in under 30 seconds | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+4. No chunk is under 40 characters or over 600
+Produced by: run_eval.py::chunk_stats and chunker.py::split_documents
+
+- Chunk length: 310-510 chars (2048 total)
+- Chunk length: 213-467 chars (1752 total)
+- Chunk length: 275-506 chars (1809 total)
+- Chunk length: 228-425 chars (1513 total)
+- Chunk length: 189-482 chars (1445 total)
+
 
 **Did it help?**
 
@@ -320,6 +332,7 @@ Output:
      tell.
 
      Milestone 4. -->
+     Yes, the metric is now fulfilled. The longest chunk retreived during evaluation was 659 characters. The index command had provided output of chunks exceeding 750 characters as well. Chunks now stay under the 600 character metric both during evaluation and the initial output provided when the corpus is indexed. Criterion 4 is now met, without impacting the success rate of the other criteria.
 
 ## What's Still Broken
 
@@ -330,6 +343,7 @@ Output:
      not.
 
      Milestone 5. -->
+     Although the criterion is now met by the evaluators, there are still chunks created by the corpus that fall under 40. These chunks may be unlikely to surface for lacking breadth of information, but the potential still exists. I did not work on addressing the minimum because in order to stay focused on passing the criterion. I anticipated it to be an additional fix, merging sections, rather than splitting by paragraph.
 
 ## What I'd Do Differently
 
@@ -337,3 +351,12 @@ Output:
      differently, and why?
 
      Milestone 5. -->
+     The timer based test was a nice addition because it required additional code to be written to support testing, but it was too easy. It's unlikely the tools we're using would exceed 30 seconds, and I'm not sure the code we're writing can have an impact one way or the other if the limit was set lower.
+
+     The chunker could still use work to meet its lower bound, but maybe there doesn't need to be a minimum at all.
+     
+     I wonder if the section based splitting made criteria 1 too easy. A singular idea may be guaranteed when the corpus is neatly organized under a sub header.
+
+## How I Used AI
+
+     I relied on AI to quickly develop run_eval.py to be able to create output that measures criteria 4 and 5. This was additional print out for the range of lengths returned by each retrieval and a timer that recorded how long each response took
